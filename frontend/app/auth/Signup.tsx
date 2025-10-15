@@ -1,7 +1,9 @@
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react-native";
 import React, { useState } from "react";
 import {
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -11,12 +13,15 @@ import {
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
-  const navigateToLogin = () => {
-    router.push("/auth/Login");
-  };
+  const router = useRouter();
+  const navigateToLogin = () => router.push("/auth/Login");
+  const navigateToHome = () => router.push("/home/(tabs)/index");
 
   return (
-    <View style={styles.screen}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.screen}
+    >
       <Text style={styles.title}>Creating account</Text>
       <Text style={styles.subtitle}>
         Creating an account is required to continue
@@ -66,6 +71,7 @@ export default function Signup() {
         </View>
       </View>
       <TouchableOpacity
+        onPress={navigateToHome}
         style={{
           width: "85%",
           height: 40,
@@ -105,15 +111,7 @@ export default function Signup() {
           </Text>
         </TouchableOpacity>
       </View>
-
-      {/* <Image
-        source={require("../../assets/images/Essential.png")}
-        style={{
-          width: 430,
-          height: 200,
-        }}
-      /> */}
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

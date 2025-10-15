@@ -14,7 +14,7 @@ export default function Index() {
     <View
       style={{
         flex: 1,
-        justifyContent: "flex-start",
+        justifyContent: "center",
         alignItems: "center",
         paddingTop: 50,
         backgroundColor: "#FFFFFF",
