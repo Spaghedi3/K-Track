@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: backend/k-track
+        working-directory: backend/ktrack
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
