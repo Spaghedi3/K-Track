@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="69bc963b-3cdd-49b0-8043-065f47a1bc7a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/k-track/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/k-track/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/k-track/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/k-track/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/k-track/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/k-track/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/k-track/src/main/java/com/danis/ktrack/KTrackApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/k-track/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/k-track/src/test/java/com/danis/ktrack/KTrackApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../k-track/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../k-track/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../k-track/.idea/jarRepositories.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../k-track/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../k-track/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../k-track/.idea/workspace.xml" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 1
+}]]></component>
+  <component name="ProjectId" id="34brVhLW7DxVJkkdDCk19uAWYpf" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/hritc/OneDrive/Documents/GitHub/K-Track/backend",
+    "nodejs_package_manager_path": "npm",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26830.84" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.26830.84" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="69bc963b-3cdd-49b0-8043-065f47a1bc7a" name="Changes" comment="" />
+      <created>1761493138113</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1761493138113</updated>
+      <workItem from="1761493139617" duration="281000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
