@@ -8,14 +8,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserWorkflowServiceImpl implements UserWorkflowService {
 
     private final UserRepository userRepository;
     private final UserValidationService userValidationService;
 
     // Dependencies are injected via the constructor
-    public UserServiceImpl(UserRepository userRepository,
-                           UserValidationService userValidationService) {
+    public UserWorkflowServiceImpl(UserRepository userRepository,
+                                   UserValidationService userValidationService) {
         this.userRepository = userRepository;
         this.userValidationService = userValidationService;
     }

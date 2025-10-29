@@ -3,7 +3,7 @@ package com.danis.ktrack.service.workflow;
 import com.danis.ktrack.domain.model.entities.User;
 import com.danis.ktrack.service.validation.ValidationException;
 
-public interface UserService {
+public interface UserWorkflowService {
 
     /**
      * Use Case: User Registration (Sign Up)
