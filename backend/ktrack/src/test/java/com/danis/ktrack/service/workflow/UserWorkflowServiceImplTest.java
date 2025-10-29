@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceImplTest {
+class UserWorkflowServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
@@ -27,7 +27,7 @@ class UserServiceImplTest {
     private UserValidationService userValidationService;
 
     @InjectMocks
-    private UserServiceImpl userService;
+    private UserWorkflowServiceImpl userService;
 
     private User validUser;
 
