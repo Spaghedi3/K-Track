@@ -37,7 +37,7 @@ private User testUser;
     exercise.setCategory(ExerciseCategory.BARBELL);
     exercise.setType(ExerciseType.STRENGTH);
     exercise.setCustom(false);
-    exercise.setcreatedByUser(null);
+    exercise.setCreatedByUser(null);
 }
 
     @Test
@@ -115,7 +115,7 @@ private User testUser;
     @Test
     void validate_CustomExercise_NullUser_ThrowsValidationException() {
         exercise.setCustom(true);
-        exercise.setcreatedByUser(null); // This is now an error
+        exercise.setCreatedByUser(null); // This is now an error
 
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             exerciseValidationService.validate(exercise);
@@ -125,7 +125,7 @@ private User testUser;
     @Test
     void validate_SystemExercise_NonNullUser_ThrowsValidationException() {
         exercise.setCustom(false);
-        exercise.setcreatedByUser(testUser); // This is now an error
+        exercise.setCreatedByUser(testUser); // This is now an error
 
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             exerciseValidationService.validate(exercise);
@@ -135,7 +135,7 @@ private User testUser;
     @Test
     void validate_ValidCustomExercise_DoesNotThrow() {
         exercise.setCustom(true);
-        exercise.setcreatedByUser(testUser); // Valid combination
+        exercise.setCreatedByUser(testUser); // Valid combination
         assertDoesNotThrow(() -> {
             exerciseValidationService.validate(exercise);
         });
@@ -144,7 +144,7 @@ private User testUser;
     @Test
     void validate_ValidSystemExercise_DoesNotThrow() {
         exercise.setCustom(false);
-        exercise.setcreatedByUser(null); // Valid combination
+        exercise.setCreatedByUser(null); // Valid combination
         assertDoesNotThrow(() -> {
             exerciseValidationService.validate(exercise);
         });

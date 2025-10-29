@@ -1,12 +1,14 @@
 package com.danis.ktrack.service.validation;
 
 import com.danis.ktrack.domain.model.entities.User;
+import org.springframework.stereotype.Service;
 
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+@Service
 public class UserValidationServiceImpl implements UserValidationService{
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile(

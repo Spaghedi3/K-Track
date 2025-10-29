@@ -35,12 +35,11 @@ class WorkoutTemplateValidationServiceImplTest {
         validTemplate.setId(1L);
         validTemplate.setName("Full Body Power");
         validTemplate.setDescription("A high-intensity workout.");
-        validTemplate.setcreatedByUser(testUser);
+        validTemplate.setCreatedByUser(testUser);
         validTemplate.setTags(new ArrayList<>(List.of("full body", "power")));
         validTemplate.setEstimatedDuration(new Duration(60, TimeUnit.MINUTES));
         validTemplate.setTemplateExercises(List.of(templateExercise));
         validTemplate.setCreatedAt(LocalDateTime.now());
-        validTemplate.setLastModified(LocalDateTime.now());
     }
 
     @Test
@@ -80,7 +79,7 @@ class WorkoutTemplateValidationServiceImplTest {
 
     @Test
     void validate_NullcreatedByUser_ThrowsValidationException() {
-        validTemplate.setcreatedByUser(null);
+        validTemplate.setCreatedBy(null);
 
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             validationService.validate(validTemplate);
@@ -147,7 +146,7 @@ class WorkoutTemplateValidationServiceImplTest {
     void validate_MultipleErrors_ThrowsValidationExceptionWithAllMessages() {
 
         validTemplate.setName(null); // Error 1
-        validTemplate.setcreatedByUser(null); // Error 2
+        validTemplate.setCreatedByUser(null); // Error 2
         validTemplate.setTemplateExercises(null); // Error 3
         validTemplate.setTags(null); // Error 4
         validTemplate.setCreatedAt(null); // Error 5
