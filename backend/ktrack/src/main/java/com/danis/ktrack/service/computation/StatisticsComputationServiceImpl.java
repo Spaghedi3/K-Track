@@ -44,7 +44,7 @@ public class StatisticsComputationServiceImpl implements StaticticsComputationSe
 
         ExerciseStatistics stats = findOrCreateStatistics(user, exercise);
 
-        // Update universal stats
+
         stats.setTotalSets(stats.getTotalSets() + 1);
         stats.setLastPerformed(completedAt);
 
@@ -53,14 +53,12 @@ public class StatisticsComputationServiceImpl implements StaticticsComputationSe
             double weight = setData.getWeight().getValue();
             double setVolume = reps * weight;
 
-            // 1. Update overall aggregate statistics
+
             stats.setTotalReps(stats.getTotalReps() + reps);
             stats.setTotalVolume(stats.getTotalVolume() + setVolume);
 
-            // 2. Update the specific VolumeDataPoint for this workout
             updateVolumeDataPoint(stats, workout, reps, setVolume, completedAt.toLocalDate());
 
-            // 3. Update Personal Records
             updatePersonalRecords(stats, reps, weight, completedAt, exercise.getId(), workout.getId());
         }
 
@@ -68,7 +66,7 @@ public class StatisticsComputationServiceImpl implements StaticticsComputationSe
         log.info("Updated statistics for user {} and exercise {}", user.getId(), exercise.getId());
     }
 
-    // ... (findOrCreateStatistics, updateVolumeDataPoint remain the same) ...
+
 
     private void updateVolumeDataPoint(ExerciseStatistics stats, Workout workout, int reps, double setVolume, LocalDate date) {
         Optional<VolumeDataPoint> existingDp = stats.getVolumeHistory().stream()
@@ -107,15 +105,12 @@ public class StatisticsComputationServiceImpl implements StaticticsComputationSe
                 set.getSetData() != null;
     }
 
-    /**
-     * THIS IS THE FIXED METHOD
-     * Checks if the set has weight and rep data for calculation.
-     */
+
     private boolean isWeightAndRepSet(WorkoutSetData setData) {
         return setData.getReps() != null &&
                 setData.getReps() > 0 &&
-                setData.getWeight() != null &&  // Check object is not null
-                setData.getWeight().getValue() > 0; // Check primitive double is > 0
+                setData.getWeight() != null &&
+                setData.getWeight().getValue() > 0;
     }
 
     private ExerciseStatistics findOrCreateStatistics(User user, Exercise exercise) {
@@ -135,19 +130,13 @@ public class StatisticsComputationServiceImpl implements StaticticsComputationSe
                 });
     }
 
-    /**
-     * THIS IS THE UPDATED PR LOGIC
-     * Updated to use the new PersonalRecord class.
-     * NOTE: This logic now ONLY tracks ESTIMATED_1RM, as the new
-     * PersonalRecord class structure does not support dynamic X-Rep-Max types.
-     */
+
     private void updatePersonalRecords(ExerciseStatistics stats, int reps, double weight, LocalDateTime date,
                                        Long exerciseId, Long workoutId) {
 
-        // 1. Calculate Estimated 1-Rep Max
+
         double estimated1RM = calculateEpley1RM(reps, weight);
 
-        // 2. Find the existing 1RM PR, if it exists
         Optional<PersonalRecord> existingPR = stats.getPersonalRecords().stream()
                 .filter(pr -> pr.getType() == PRType.MAX_WEIGHT)
                 .findFirst();
@@ -162,7 +151,6 @@ public class StatisticsComputationServiceImpl implements StaticticsComputationSe
                 log.info("New 1RM PR achieved: {}!", estimated1RM);
             }
         } else {
-            // First time setting this record
             PersonalRecord newPR = new PersonalRecord(
                     String.valueOf(exerciseId),
                     PRType.MAX_WEIGHT,

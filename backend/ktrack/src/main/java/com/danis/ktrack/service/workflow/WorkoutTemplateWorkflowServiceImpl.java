@@ -27,42 +27,30 @@ public class WorkoutTemplateWorkflowServiceImpl implements WorkoutTemplateWorkfl
     @Override
     @Transactional
     public WorkoutTemplate createTemplate(WorkoutTemplate newTemplate, Long creatorUserId) throws ValidationException {
-        // 1. FIND DEPENDENCIES
         User creator = userRepository.findById(creatorUserId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + creatorUserId));
 
-        // 2. SET UP ENTITY
         newTemplate.setCreatedByUser(creator);
-        // The validation service checks if the creator is null
-        // so we must set it *before* validating.
 
-        // 3. VALIDATION
+
         validationService.validate(newTemplate);
 
-        // 4. PERSISTENCE
         return templateRepository.save(newTemplate);
     }
 
     @Override
     @Transactional
     public WorkoutTemplate updateTemplate(Long templateId, WorkoutTemplate templateDetails) throws ValidationException {
-        // 1. VALIDATION
-        // Validate the new details *before* querying the database.
-        // This avoids validating a creator, as the existing template already has one.
-        // Note: You may need to adjust validation logic if it incorrectly flags
-        // a missing 'createdByUser' field on the 'templateDetails' DTO.
+
         validationService.validate(templateDetails);
 
-        // 2. FIND ENTITY
         WorkoutTemplate existingTemplate = templateRepository.findById(templateId)
                 .orElseThrow(() -> new RuntimeException("WorkoutTemplate not found with id: " + templateId));
 
-        // 3. UPDATE & PERSIST
-        // Update fields on the existing, managed entity.
+
         existingTemplate.setName(templateDetails.getName());
         existingTemplate.setDescription(templateDetails.getDescription());
         existingTemplate.setTags(templateDetails.getTags());
-        // Add any other fields that are safe to update.
 
         return templateRepository.save(existingTemplate);
     }

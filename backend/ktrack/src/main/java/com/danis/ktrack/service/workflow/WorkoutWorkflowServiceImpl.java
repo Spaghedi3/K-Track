@@ -27,34 +27,25 @@ public class WorkoutWorkflowServiceImpl implements WorkoutWorkflowService {
     @Override
     @Transactional
     public Workout startWorkout(Workout newWorkout, Long userId) throws ValidationException {
-        // 1. FIND DEPENDENCIES
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-
-        // 2. SET UP ENTITY
         newWorkout.setUser(user);
-        // The validation service checks if the user is null
 
-        // 3. VALIDATION
         validationService.validate(newWorkout);
 
-        // 4. PERSISTENCE
         return workoutRepository.save(newWorkout);
     }
 
     @Override
     @Transactional
     public Workout updateWorkout(Long workoutId, Workout workoutDetails) throws ValidationException {
-        // 1. VALIDATION
-        // Validate the new details provided.
+
         validationService.validate(workoutDetails);
 
-        // 2. FIND ENTITY
         Workout existingWorkout = workoutRepository.findById(workoutId)
                 .orElseThrow(() -> new RuntimeException("Workout not found with id: " + workoutId));
 
-        // 3. UPDATE & PERSIST
-        // Update the fields on the managed entity.
+
         existingWorkout.setName(workoutDetails.getName());
         existingWorkout.setDate(workoutDetails.getDate());
         existingWorkout.setStatus(workoutDetails.getStatus());

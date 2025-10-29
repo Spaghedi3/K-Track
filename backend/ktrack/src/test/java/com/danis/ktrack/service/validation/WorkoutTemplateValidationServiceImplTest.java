@@ -25,11 +25,9 @@ class WorkoutTemplateValidationServiceImplTest {
         validationService = new WorkoutTemplateValidationServiceImpl();
 
         testUser = new User();
-        // Assuming User has at least an ID set for non-null checks
         testUser.setId(1L);
 
         TemplateExercise templateExercise = new TemplateExercise();
-        // Assuming TemplateExercise only needs to be non-null for this test
 
         validTemplate = new WorkoutTemplate();
         validTemplate.setId(1L);
@@ -79,7 +77,7 @@ class WorkoutTemplateValidationServiceImplTest {
 
     @Test
     void validate_NullcreatedByUser_ThrowsValidationException() {
-        validTemplate.setCreatedBy(null);
+        validTemplate.setCreatedByUser(null);
 
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             validationService.validate(validTemplate);

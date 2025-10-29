@@ -23,11 +23,9 @@ class ExerciseStatisticsValidationServiceImplTest {
     void setUp() {
         statsValidationService = new ExerciseStatisticsValidationServiceImpl();
 
-        // Create stubs for dependencies
         testUser = new User();
         testExercise = new Exercise();
 
-        // Create a valid ExerciseStatistics object
         stats = new ExerciseStatistics();
         stats.setUser(testUser);
         stats.setExercise(testExercise);
@@ -37,7 +35,7 @@ class ExerciseStatisticsValidationServiceImplTest {
         stats.setTotalSets(0);
         stats.setTotalReps(0);
         stats.setTotalVolume(0.0);
-        stats.setLastPerformed(LocalDateTime.now().minusDays(1)); // A valid past date
+        stats.setLastPerformed(LocalDateTime.now().minusDays(1));
     }
 
     @Test
@@ -133,7 +131,6 @@ class ExerciseStatisticsValidationServiceImplTest {
 
     @Test
     void validate_ValidStats_DoesNotThrowException() {
-        // The stats object from setUp() is valid
         assertDoesNotThrow(() -> {
             statsValidationService.validate(stats);
         });
@@ -141,7 +138,6 @@ class ExerciseStatisticsValidationServiceImplTest {
 
     @Test
     void validate_ValidStatsWithNullLastPerformed_DoesNotThrowException() {
-        // It's valid for a new stat object to have null lastPerformed
         stats.setLastPerformed(null);
         assertDoesNotThrow(() -> {
             statsValidationService.validate(stats);

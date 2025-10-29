@@ -49,9 +49,7 @@ public class UserComputationServiceImpl implements UserComputationService {
     }
 
 
-    /**
-     * Retrieves the most recent weight recorded in the user's profile history.
-     */
+
     @Override
     public Double getMostRecentWeight(User user) {
         if (user == null || user.getProfileHistory() == null || user.getProfileHistory().isEmpty()) {
@@ -67,9 +65,7 @@ public class UserComputationServiceImpl implements UserComputationService {
                 .orElse(null);
     }
 
-    /**
-     * Calculates the total number of workouts completed by the user.
-     */
+
     @Override
     public int getTotalWorkoutCount(User user) {
         List<?> workouts = user != null ? user.getWorkouts() : null;

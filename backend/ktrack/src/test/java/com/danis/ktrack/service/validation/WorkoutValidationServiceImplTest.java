@@ -22,7 +22,6 @@ class WorkoutValidationServiceImplTest {
     void setUp() {
         workoutValidationService = new WorkoutValidationServiceImpl();
 
-        // Create a complete, valid workout
         User testUser = new User();
         testUser.setId(1L);
 
@@ -35,8 +34,8 @@ class WorkoutValidationServiceImplTest {
         workout.setStatus(WorkoutStatus.IN_PROGRESS);
         workout.setPeriod(validPeriod);
         workout.setUser(testUser);
-        workout.setTotalVolume(0); // Valid starting volume
-        workout.setWorkoutExercises(new ArrayList<>()); // Valid empty list
+        workout.setTotalVolume(0);
+        workout.setWorkoutExercises(new ArrayList<>());
     }
 
     @Test
@@ -58,7 +57,7 @@ class WorkoutValidationServiceImplTest {
 
     @Test
     void validate_BlankName_ThrowsValidationException() {
-        workout.setName("   "); // Blank name
+        workout.setName("   ");
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             workoutValidationService.validate(workout);
         });
@@ -103,7 +102,7 @@ class WorkoutValidationServiceImplTest {
 
     @Test
     void validate_NegativeTotalVolume_ThrowsValidationException() {
-        workout.setTotalVolume(-100); // Negative volume
+        workout.setTotalVolume(-100);
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             workoutValidationService.validate(workout);
         });
@@ -112,7 +111,7 @@ class WorkoutValidationServiceImplTest {
 
     @Test
     void validate_NullWorkoutExercises_ThrowsValidationException() {
-        workout.setWorkoutExercises(null); // Null list
+        workout.setWorkoutExercises(null);
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             workoutValidationService.validate(workout);
         });
@@ -121,7 +120,6 @@ class WorkoutValidationServiceImplTest {
 
     @Test
     void validate_ValidWorkout_DoesNotThrowException() {
-        // The 'workout' from setUp is already valid
         assertDoesNotThrow(() -> {
             workoutValidationService.validate(workout);
         });

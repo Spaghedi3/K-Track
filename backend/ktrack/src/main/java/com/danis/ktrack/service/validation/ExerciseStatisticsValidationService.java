@@ -4,6 +4,6 @@ import com.danis.ktrack.domain.model.entities.ExerciseStatistics;
 
 public interface ExerciseStatisticsValidationService {
 
-void validate(ExerciseStatistics stats) throws ValidationException;
+    void validate(ExerciseStatistics stats) throws ValidationException;
 
 }

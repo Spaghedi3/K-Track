@@ -7,8 +7,6 @@ public interface WorkoutWorkflowService {
 
     /**
      * Use Case: Start New Workout
-     * Validates and creates a new workout session for a user.
-     *
      * @param newWorkout The Workout object with initial details (name, date, user, status).
      * @param userId     The ID of the user starting the workout.
      * @return The persisted Workout entity.

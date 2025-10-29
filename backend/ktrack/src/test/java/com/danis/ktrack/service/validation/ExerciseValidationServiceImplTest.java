@@ -57,7 +57,7 @@ private User testUser;
     }
     @Test
     void validate_BlankMetadataName_ThrowsValidationException() {
-        validMetadata.setName("  "); // Blank name
+        validMetadata.setName("  ");
         exercise.setMetadata(validMetadata);
 
         ValidationException exception = assertThrows(ValidationException.class, () -> {
@@ -75,7 +75,7 @@ private User testUser;
     }
     @Test
     void validate_EmptyPrimaryMuscles_ThrowsValidationException() {
-        exercise.setPrimaryMuscleGroups(new ArrayList<>()); // Empty list
+        exercise.setPrimaryMuscleGroups(new ArrayList<>());
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             exerciseValidationService.validate(exercise);
         });
@@ -91,7 +91,7 @@ private User testUser;
     }
     @Test
     void validate_ValidEmptySecondaryMuscles_DoesNotThrow() {
-        exercise.setSecondaryMuscleGroups(new ArrayList<>()); // Empty is fine
+        exercise.setSecondaryMuscleGroups(new ArrayList<>());
         assertDoesNotThrow(() -> {
             exerciseValidationService.validate(exercise);
         });
@@ -115,7 +115,7 @@ private User testUser;
     @Test
     void validate_CustomExercise_NullUser_ThrowsValidationException() {
         exercise.setCustom(true);
-        exercise.setCreatedByUser(null); // This is now an error
+        exercise.setCreatedByUser(null);
 
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             exerciseValidationService.validate(exercise);
@@ -125,7 +125,7 @@ private User testUser;
     @Test
     void validate_SystemExercise_NonNullUser_ThrowsValidationException() {
         exercise.setCustom(false);
-        exercise.setCreatedByUser(testUser); // This is now an error
+        exercise.setCreatedByUser(testUser);
 
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             exerciseValidationService.validate(exercise);
@@ -135,7 +135,7 @@ private User testUser;
     @Test
     void validate_ValidCustomExercise_DoesNotThrow() {
         exercise.setCustom(true);
-        exercise.setCreatedByUser(testUser); // Valid combination
+        exercise.setCreatedByUser(testUser);
         assertDoesNotThrow(() -> {
             exerciseValidationService.validate(exercise);
         });
@@ -144,7 +144,7 @@ private User testUser;
     @Test
     void validate_ValidSystemExercise_DoesNotThrow() {
         exercise.setCustom(false);
-        exercise.setCreatedByUser(null); // Valid combination
+        exercise.setCreatedByUser(null);
         assertDoesNotThrow(() -> {
             exerciseValidationService.validate(exercise);
         });

@@ -17,18 +17,14 @@ import java.time.LocalDateTime;
 public class UserPhysicalProfile {
     @Embedded
     @AttributeOverrides({
-            // Renames 'value' field from Weight VO to 'body_weight' column
             @AttributeOverride(name = "value", column = @Column(name = "body_weight")),
-            // Renames 'unit' field from Weight VO to 'body_weight_unit' column
             @AttributeOverride(name = "unit", column = @Column(name = "body_weight_unit"))
     })
     private Weight weight;
 
     @Embedded
     @AttributeOverrides({
-            // Renames 'value' field from Height VO to 'height' column
             @AttributeOverride(name = "value", column = @Column(name = "height")),
-            // Renames 'unit' field from Height VO to 'height_unit' column
             @AttributeOverride(name = "unit", column = @Column(name = "height_unit"))
     })
     private Height height;

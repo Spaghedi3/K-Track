@@ -29,7 +29,7 @@ public class ExerciseStatistics {
     @JoinColumn(name = "exercise_id", nullable = false)
     private Exercise exercise;
 
-    @ElementCollection // 4.
+    @ElementCollection
     @CollectionTable(name = "personal_records", joinColumns = @JoinColumn(name = "statistics_id"))
     @OrderBy("achievedDate DESC")
     private List<PersonalRecord> personalRecords;

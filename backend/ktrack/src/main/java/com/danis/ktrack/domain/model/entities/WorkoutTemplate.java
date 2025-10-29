@@ -42,7 +42,7 @@ public class WorkoutTemplate extends AuditableBaseEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @OrderBy("orderIndex ASC") // Keep them in order
+    @OrderBy("orderIndex ASC")
     private List<TemplateExercise> templateExercises;
 
     //private LocalDateTime createdAt;

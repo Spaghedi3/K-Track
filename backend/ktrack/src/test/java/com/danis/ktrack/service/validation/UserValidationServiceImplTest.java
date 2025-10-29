@@ -22,7 +22,6 @@ class UserValidationServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        // Create a COMPLETE valid user
         user = new User();
         user.setUsername("testuser");
         user.setEmail("test@example.com");
@@ -32,7 +31,7 @@ class UserValidationServiceImplTest {
 
     @Test
     void validate_NullUser_ThrowsValidationException() {
-        // Act & Assert
+
         ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> userValidationService.validate(null)
@@ -43,10 +42,9 @@ class UserValidationServiceImplTest {
 
     @Test
     void validate_NullUsername_ThrowsValidationException() {
-        // Arrange
+
         user.setUsername(null);
 
-        // Act & Assert
         ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> userValidationService.validate(user)
@@ -57,10 +55,8 @@ class UserValidationServiceImplTest {
 
     @Test
     void validate_BlankUsername_ThrowsValidationException() {
-        // Arrange
-        user.setUsername("   "); // Blank string
+        user.setUsername("   ");
 
-        // Act & Assert
         ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> userValidationService.validate(user)
@@ -71,10 +67,9 @@ class UserValidationServiceImplTest {
 
     @Test
     void validate_InvalidEmailFormat_ThrowsValidationException() {
-        // Arrange
         user.setEmail("not-an-email");
 
-        // Act & Assert
+
         ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> userValidationService.validate(user)
@@ -85,10 +80,8 @@ class UserValidationServiceImplTest {
 
     @Test
     void validate_NullEmail_ThrowsValidationException() {
-        // Arrange
         user.setEmail(null);
 
-        // Act & Assert
         ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> userValidationService.validate(user)
@@ -100,8 +93,7 @@ class UserValidationServiceImplTest {
 
     @Test
     void validate_ValidUser_DoesNotThrowException() {
-        // Act & Assert
-        // This should pass without throwing any exception
+
         assertDoesNotThrow(() -> userValidationService.validate(user));
     }
 }

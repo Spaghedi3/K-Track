@@ -13,6 +13,4 @@ import lombok.Value;
 @AllArgsConstructor
 public class BodyFatPercentage {
     private double value;
-
-
 }

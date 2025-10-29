@@ -13,19 +13,15 @@ public class SpringSecurityAuditorAware {
 
     @Bean
     public AuditorAware<String> auditorProvider() {
-        // This is a lambda implementation of the AuditorAware<String> interface.
         return () -> {
-            // Get the current Authentication object from Spring Security
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() == null || "anonymousUser".equals(authentication.getPrincipal())) {
-                // If no one is logged in or principal is anonymous, return "system" or empty
-                // You might want to return null or a specific system user identifier
+
                 return Optional.of("system");
             }
 
-            // Get the username. This depends on your UserDetails implementation.
-            // If using standard Spring Security User:
+
             Object principal = authentication.getPrincipal();
             String username;
             if (principal instanceof User) {
@@ -33,10 +29,8 @@ public class SpringSecurityAuditorAware {
             } else if (principal instanceof String) {
                 username = (String) principal;
             } else {
-                // Handle other principal types or return a default/system user
-                // For example, if you have a custom UserDetails object:
-                // username = ((YourCustomUserDetails) principal).getUsername();
-                username = "unknown"; // Fallback
+
+                username = "unknown";
             }
 
             return Optional.of(username);
