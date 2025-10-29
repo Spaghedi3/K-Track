@@ -1,6 +1,7 @@
 package com.danis.ktrack.domain.model.entities;
 
 
+import com.danis.ktrack.domain.AuditableBaseEntity;
 import com.danis.ktrack.domain.model.enums.ExerciseCategory;
 import com.danis.ktrack.domain.model.enums.ExerciseType;
 import com.danis.ktrack.domain.model.enums.MuscleGroup;
@@ -8,6 +9,7 @@ import com.danis.ktrack.domain.model.valueobject.ExerciseMetadata;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -16,9 +18,10 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name="exercises")
-public class Exercise {
+public class Exercise extends AuditableBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -48,8 +51,8 @@ public class Exercise {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_user_id")
-    private User createdBy;
+    private User createdByUser;
 
     private boolean isDeleted = false;
-    private LocalDateTime createdAt;
+   // private LocalDateTime createdAt;
 }

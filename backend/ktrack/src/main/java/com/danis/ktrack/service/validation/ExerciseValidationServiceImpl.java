@@ -41,10 +41,10 @@ public class ExerciseValidationServiceImpl implements ExerciseValidationService{
         if (exercise.getType() == null) {
             errors.add("Exercise type must be specified.");
         }
-        if (exercise.isCustom() && exercise.getCreatedBy() == null) {
-            errors.add("A custom exercise must have a creator (createdBy user cannot be null).");
+        if (exercise.isCustom() && exercise.getCreatedByUser() == null) {
+            errors.add("A custom exercise must have a creator (createdByUser user cannot be null).");
         }
-        if (!exercise.isCustom() && exercise.getCreatedBy() != null) {
+        if (!exercise.isCustom() && exercise.getCreatedByUser() != null) {
             errors.add("A system exercise (isCustom=false) must not have a creator.");
         }
         if (!errors.isEmpty()) {

@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface WorkoutTemplateRepository extends JpaRepository<WorkoutTemplate,Long> {
-    List<WorkoutTemplate> findByCreatedBy(User createdBy);
+    List<WorkoutTemplate> findBycreatedByUser(User createdByUser);
 
 }

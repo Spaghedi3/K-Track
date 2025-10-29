@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name="users")
-public class User {
+public class User  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,7 +44,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Workout> workouts;
 
-    @OneToMany(mappedBy = "createdBy")
+    @OneToMany(mappedBy = "createdByUser")
     private List<WorkoutTemplate> templates;
 
     @OneToMany(mappedBy = "user")

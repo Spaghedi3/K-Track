@@ -22,8 +22,8 @@ public class WorkoutTemplateValidationServiceImpl implements WorkoutTemplateVali
         }
 
 
-        if (workoutTemplate.getCreatedBy() == null) {
-            errors.add("WorkoutTemplate must have a creator (createdBy user cannot be null).");
+        if (workoutTemplate.getCreatedByUser() == null) {
+            errors.add("WorkoutTemplate must have a creator (createdByUser user cannot be null).");
         }
 
 

@@ -3,7 +3,6 @@ package com.danis.ktrack.service.computation;
 import com.danis.ktrack.domain.model.entities.Workout;
 import com.danis.ktrack.domain.model.entities.WorkoutExercise;
 import com.danis.ktrack.domain.model.entities.WorkoutSet;
-import com.danis.ktrack.domain.model.valueobject.Weight;
 import com.danis.ktrack.domain.model.valueobject.WorkoutSetData;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +11,13 @@ public class WorkoutComputationServiceImpl implements WorkoutComputationService 
 
     /**
      * Calculates total volume (sum of [weight * reps] for all sets).
+     *
+     * @return
      */
     @Override
-    public void calculateTotalVolume(Workout workout) {
+    public double calculateTotalVolume(Workout workout) {
         if (workout == null) {
-            return;
+            return 0;
         }
 
         double totalVolume = 0.0;
@@ -46,5 +47,6 @@ public class WorkoutComputationServiceImpl implements WorkoutComputationService 
         }
 
         workout.setTotalVolume(totalVolume);
+        return totalVolume;
     }
 }

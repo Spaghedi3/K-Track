@@ -35,7 +35,7 @@ class WorkoutTemplateValidationServiceImplTest {
         validTemplate.setId(1L);
         validTemplate.setName("Full Body Power");
         validTemplate.setDescription("A high-intensity workout.");
-        validTemplate.setCreatedBy(testUser);
+        validTemplate.setcreatedByUser(testUser);
         validTemplate.setTags(new ArrayList<>(List.of("full body", "power")));
         validTemplate.setEstimatedDuration(new Duration(60, TimeUnit.MINUTES));
         validTemplate.setTemplateExercises(List.of(templateExercise));
@@ -79,13 +79,13 @@ class WorkoutTemplateValidationServiceImplTest {
     }
 
     @Test
-    void validate_NullCreatedBy_ThrowsValidationException() {
-        validTemplate.setCreatedBy(null);
+    void validate_NullcreatedByUser_ThrowsValidationException() {
+        validTemplate.setcreatedByUser(null);
 
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             validationService.validate(validTemplate);
         });
-        assertTrue(exception.getMessage().contains("WorkoutTemplate must have a creator (createdBy user cannot be null)."), "Should check for null creator.");
+        assertTrue(exception.getMessage().contains("WorkoutTemplate must have a creator (createdByUser user cannot be null)."), "Should check for null creator.");
     }
 
     @Test
@@ -147,7 +147,7 @@ class WorkoutTemplateValidationServiceImplTest {
     void validate_MultipleErrors_ThrowsValidationExceptionWithAllMessages() {
 
         validTemplate.setName(null); // Error 1
-        validTemplate.setCreatedBy(null); // Error 2
+        validTemplate.setcreatedByUser(null); // Error 2
         validTemplate.setTemplateExercises(null); // Error 3
         validTemplate.setTags(null); // Error 4
         validTemplate.setCreatedAt(null); // Error 5

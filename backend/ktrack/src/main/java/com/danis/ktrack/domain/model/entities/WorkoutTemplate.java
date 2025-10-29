@@ -1,6 +1,7 @@
 package com.danis.ktrack.domain.model.entities;
 
 
+import com.danis.ktrack.domain.AuditableBaseEntity;
 import com.danis.ktrack.domain.model.valueobject.Duration;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "workout_templates")
-public class WorkoutTemplate {
+public class WorkoutTemplate extends AuditableBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +27,7 @@ public class WorkoutTemplate {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_user_id")
-    private User createdBy;
+    private User createdByUser;
 
     @ElementCollection
     @CollectionTable(name = "template_tags", joinColumns = @JoinColumn(name = "template_id"))
@@ -44,6 +45,6 @@ public class WorkoutTemplate {
     @OrderBy("orderIndex ASC") // Keep them in order
     private List<TemplateExercise> templateExercises;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime lastModified;
+    //private LocalDateTime createdAt;
+   // private LocalDateTime lastModified;
 }

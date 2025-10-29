@@ -1,11 +1,13 @@
 package com.danis.ktrack.domain.model.entities;
 
 
+import com.danis.ktrack.domain.AuditableBaseEntity;
 import com.danis.ktrack.domain.model.enums.WorkoutStatus;
 import com.danis.ktrack.domain.model.valueobject.WorkoutPeriod;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
@@ -14,10 +16,11 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @Entity
 @Table(name="workouts")
-public class Workout {
+public class Workout extends AuditableBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +37,7 @@ public class Workout {
 
     private String notes;
     private double totalVolume;
-    private LocalDateTime createdAt;
+    //private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

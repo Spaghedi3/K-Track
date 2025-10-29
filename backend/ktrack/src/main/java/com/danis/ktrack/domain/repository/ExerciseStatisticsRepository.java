@@ -4,11 +4,18 @@ import com.danis.ktrack.domain.model.entities.Exercise;
 import com.danis.ktrack.domain.model.entities.ExerciseStatistics;
 import com.danis.ktrack.domain.model.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface ExerciseStatisticsRepository extends JpaRepository<ExerciseStatistics, Long> {
     Optional<ExerciseStatistics> findByUserAndExercise(User user, Exercise exercise);
+    @Query("SELECT es FROM ExerciseStatistics es " +
+            "WHERE es.user = :user AND es.exercise.id IN :exerciseIds")
+    List<ExerciseStatistics> findByUserAndExerciseIdIn(@Param("user") User user,
+                                                       @Param("exerciseIds") List<Long> exerciseIds);
 }

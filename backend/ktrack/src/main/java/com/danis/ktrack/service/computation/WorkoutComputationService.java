@@ -10,7 +10,8 @@ public interface WorkoutComputationService {
      * The method updates the 'totalVolume' field on the Workout object directly.
      *
      * @param workout The workout entity to compute.
+     * @return
      */
-    void calculateTotalVolume(Workout workout);
+    double calculateTotalVolume(Workout workout);
 
 }
