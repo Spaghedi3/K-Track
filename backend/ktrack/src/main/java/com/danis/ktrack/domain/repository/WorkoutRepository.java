@@ -16,7 +16,7 @@ public interface WorkoutRepository extends JpaRepository<Workout,Long>
 {
     @Query("SELECT w FROM Workout w " +
             "LEFT JOIN FETCH w.workoutExercises we " +
-            "LEFT JOIN FETCH we.sets " +
             "WHERE w.id = :workoutId")
-    Optional<Workout> findByIdWithExercisesAndSets(@Param("workoutId") Long workoutId);
+    Optional<Workout> findByIdWithExercises(@Param("workoutId") Long workoutId);
+
 }

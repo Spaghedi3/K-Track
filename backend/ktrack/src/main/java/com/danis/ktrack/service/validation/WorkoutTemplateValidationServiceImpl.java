@@ -1,10 +1,11 @@
 package com.danis.ktrack.service.validation;
 
 import com.danis.ktrack.domain.model.entities.WorkoutTemplate;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Service
 public class WorkoutTemplateValidationServiceImpl implements WorkoutTemplateValidationService {
 
     @Override
