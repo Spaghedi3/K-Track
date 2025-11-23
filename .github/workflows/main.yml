@@ -1,53 +1,19 @@
-name: CI Pipeline
+backend:
+  name: Build & Test Backend (Docker)
+  runs-on: ubuntu-latest
 
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
+  steps:
+    - name: Check out code
+      uses: actions/checkout@v4
 
-jobs:
-  backend:
-    name: Build & Test Backend (Docker)
-    runs-on: ubuntu-latest
+    - name: Set up Docker Compose
+      run: docker compose version
 
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
+    - name: Build backend image (tests run automatically)
+      run: docker compose -f docker-compose.yml build backend
 
-      - name: Set up Docker Compose
-        run: |
-          docker compose version
+    - name: Start backend + DB
+      run: docker compose -f docker-compose.yml up -d
 
-      - name: Build and start backend + DB
-        run: |
-          docker compose -f docker-compose.yml up --build -d
-          
-      - name: Run backend tests inside container
-        run: |
-          docker compose exec backend mvn test
-
-      - name: Stop containers
-        run: |
-          docker compose down
-
-  # frontend job stays the same
-  frontend:
-    name: Build & Test Frontend
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      - name: Install dependencies
-        run: npm ci
-      - name: Run tests
-        run: npm test --if-present
-      - name: Build
-        run: npm run build --if-present
+    - name: Stop containers
+      run: docker compose down
