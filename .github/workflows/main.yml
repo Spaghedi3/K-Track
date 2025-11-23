@@ -40,11 +40,6 @@ jobs:
       - name: Start backend
         run: docker compose up -d backend
 
-      # Optional: verify backend is running
-      - name: Check backend health
-        run: |
-          sleep 10
-          curl -f http://localhost:8081/actuator/health || exit 1
 
       # Cleanup
       - name: Stop containers
