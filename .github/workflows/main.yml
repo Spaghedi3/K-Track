@@ -1,19 +1,72 @@
-backend:
-  name: Build & Test Backend (Docker)
-  runs-on: ubuntu-latest
+name: CI Pipeline
 
-  steps:
-    - name: Check out code
-      uses: actions/checkout@v4
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
 
-    - name: Set up Docker Compose
-      run: docker compose version
+jobs:
+  # ------------------------
+  # Backend Job (Docker)
+  # ------------------------
+  backend:
+    name: Build & Test Backend (Docker)
+    runs-on: ubuntu-latest
 
-    - name: Build backend image (tests run automatically)
-      run: docker compose -f docker-compose.yml build backend
+    steps:
+      # Checkout code
+      - name: Check out code
+        uses: actions/checkout@v4
 
-    - name: Start backend + DB
-      run: docker compose -f docker-compose.yml up -d
+      # Verify Docker Compose is available
+      - name: Set up Docker Compose
+        run: docker compose version
 
-    - name: Stop containers
-      run: docker compose down
+      # Build backend image (tests run automatically during build)
+      - name: Build backend Docker image
+        run: docker compose -f docker-compose.yml build backend
+
+      # Start backend + DB in detached mode
+      - name: Start backend + Postgres
+        run: docker compose -f docker-compose.yml up -d
+
+      # Optional: wait for DB to be ready (good practice)
+      - name: Wait for Postgres
+        run: |
+          echo "Waiting for Postgres to be ready..."
+          until docker compose exec db pg_isready -U ${POSTGRES_USER}; do
+            sleep 2
+          done
+
+      # Shutdown containers after tests
+      - name: Stop containers
+        run: docker compose -f docker-compose.yml down
+
+  # ------------------------
+  # Frontend Job
+  # ------------------------
+  frontend:
+    name: Build & Test Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test --if-present
+
+      - name: Build
+        run: npm run build --if-present
