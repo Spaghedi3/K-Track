@@ -7,27 +7,31 @@ on:
     branches: [ main, develop ]
 
 jobs:
-  # Back
   backend:
-    name: Build & Test Backend
+    name: Build & Test Backend (Docker)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend/ktrack
+
     steps:
-      - name: Checkout code
+      - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'  
+      - name: Set up Docker Compose
+        run: |
+          docker compose version
 
-      - name: Build and run tests
-        run: mvn -B clean verify
+      - name: Build and start backend + DB
+        run: |
+          docker compose -f docker-compose.yml up --build -d
+          
+      - name: Run backend tests inside container
+        run: |
+          docker compose exec backend mvn test
 
-  #Front
+      - name: Stop containers
+        run: |
+          docker compose down
+
+  # frontend job stays the same
   frontend:
     name: Build & Test Frontend
     runs-on: ubuntu-latest
@@ -37,18 +41,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-
       - name: Install dependencies
         run: npm ci
-
       - name: Run tests
         run: npm test --if-present
-
       - name: Build
         run: npm run build --if-present
-
