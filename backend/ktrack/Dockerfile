@@ -1,15 +1,12 @@
+# 1. Build stage (JDK, includes Maven)
 FROM eclipse-temurin:17-jdk AS build
 WORKDIR /app
-
-# Copy everything
 COPY . .
+RUN chmod +x mvnw
+# Build and run tests
+RUN ./mvnw clean package
 
-# Make mvnw executable
-RUN ["chmod", "+x", "./mvnw"]
-
-# Build the JAR
-RUN ./mvnw clean package -DskipTests
-
+# 2. Runtime stage (JRE, smaller, no Maven)
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
