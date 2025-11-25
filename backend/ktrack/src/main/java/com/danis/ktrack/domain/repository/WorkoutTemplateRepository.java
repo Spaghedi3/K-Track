@@ -11,5 +11,6 @@ import java.util.List;
 @Repository
 public interface WorkoutTemplateRepository extends JpaRepository<WorkoutTemplate,Long> {
     List<WorkoutTemplate> findBycreatedByUser(User createdByUser);
-
+    List<WorkoutTemplate> findByNameContainingIgnoreCase(String name);
+    List<WorkoutTemplate> findByTagsContaining(String tag);
 }
