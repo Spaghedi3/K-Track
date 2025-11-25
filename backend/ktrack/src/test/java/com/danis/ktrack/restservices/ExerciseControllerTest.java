@@ -7,38 +7,37 @@ import com.danis.ktrack.dto.exercise.ExerciseDTO;
 import com.danis.ktrack.dto.exercise.ExerciseStatisticsRequest;
 import com.danis.ktrack.dto.exercise.ExerciseSummaryRequest;
 import com.danis.ktrack.service.ExerciseService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean; // NEW IMPORT
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-@WebMvcTest(ExerciseController.class)
+// 1. Start the full server on a random port
+// 2. Define security props so we know the credentials to use
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
+        "spring.security.user.name=testuser",
+        "spring.security.user.password=testpass"
+})
 class ExerciseControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private TestRestTemplate restTemplate;
 
     @MockitoBean
     private ExerciseService exerciseService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     private ExerciseDTO exerciseDTO;
     private ExerciseSummaryRequest summaryDTO;
@@ -46,11 +45,9 @@ class ExerciseControllerTest {
 
     @BeforeEach
     void setUp() {
-        // Setup dummy data
         exerciseDTO = new ExerciseDTO();
         exerciseDTO.setId(1L);
         exerciseDTO.setName("Bench Press");
-        exerciseDTO.setDescription("Chest exercise");
         exerciseDTO.setCategory(ExerciseCategory.BARBELL);
         exerciseDTO.setType(ExerciseType.STRENGTH);
         exerciseDTO.setPrimaryMuscleGroups(List.of(MuscleGroup.CHEST));
@@ -69,81 +66,112 @@ class ExerciseControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user")
-    void getAllExercises_ShouldReturnList() throws Exception {
+    void getAllExercises_ShouldReturnList() {
+        // Arrange
         when(exerciseService.getAllExercises()).thenReturn(List.of(summaryDTO));
 
-        mockMvc.perform(get("/api/v1/exercises"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].name").value("Bench Press"));
+        // Act
+        // We use ParameterizedTypeReference to handle List<Type> responses correctly
+        ResponseEntity<List<ExerciseSummaryRequest>> response = restTemplate
+                .withBasicAuth("testuser", "testpass")
+                .exchange(
+                        "/api/v1/exercises",
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<>() {}
+                );
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+        assertEquals("Bench Press", response.getBody().get(0).getName());
 
         verify(exerciseService, times(1)).getAllExercises();
     }
 
     @Test
-    @WithMockUser(username = "user")
-    void getExerciseById_ShouldReturnExercise() throws Exception {
-        // 1. Setup the specific data we expect for THIS test
-        ExerciseDTO mockResponse = new ExerciseDTO();
-        mockResponse.setId(1L);
-        mockResponse.setName("Bench Press"); // matches jsonPath value below
-        mockResponse.setCategory(ExerciseCategory.BARBELL); // matches jsonPath value below
-        mockResponse.setType(ExerciseType.STRENGTH);
-        mockResponse.setCustom(false);
+    void getExerciseById_ShouldReturnExercise() {
+        // Arrange
+        when(exerciseService.getExerciseById(1L)).thenReturn(exerciseDTO);
 
-        // 2. Tell the Mock Service: "When controller asks for ID 1, return this object"
-        when(exerciseService.getExerciseById(eq(1L))).thenReturn(mockResponse);
+        // Act
+        ResponseEntity<ExerciseDTO> response = restTemplate
+                .withBasicAuth("testuser", "testpass")
+                .getForEntity("/api/v1/exercises/1", ExerciseDTO.class);
 
-        // 3. Perform the request and verify
-        mockMvc.perform(get("/api/v1/exercises/1"))
-                .andDo(print()) // This prints the JSON to the console for debugging
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Bench Press"))
-                .andExpect(jsonPath("$.category").value("BARBELL"));
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1L, response.getBody().getId());
+        assertEquals("Bench Press", response.getBody().getName());
+        assertEquals(ExerciseCategory.BARBELL, response.getBody().getCategory());
 
-        verify(exerciseService, times(1)).getExerciseById(eq(1L));
+        verify(exerciseService, times(1)).getExerciseById(1L);
     }
 
     @Test
-    @WithMockUser(username = "user")
-    void createExercise_ShouldReturnCreatedExercise() throws Exception {
+    void createExercise_ShouldReturnCreatedExercise() {
+        // Arrange
         when(exerciseService.createExercise(any(ExerciseDTO.class))).thenReturn(exerciseDTO);
 
-        mockMvc.perform(post("/api/v1/exercises")
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(exerciseDTO)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("Bench Press"));
+        // Act
+        ResponseEntity<ExerciseDTO> response = restTemplate
+                .withBasicAuth("testuser", "testpass")
+                .postForEntity("/api/v1/exercises", exerciseDTO, ExerciseDTO.class);
+
+        // Assert
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Bench Press", response.getBody().getName());
 
         verify(exerciseService, times(1)).createExercise(any(ExerciseDTO.class));
     }
 
     @Test
-    @WithMockUser(username = "user")
-    void deleteExercise_ShouldReturnNoContent() throws Exception {
+    void deleteExercise_ShouldReturnNoContent() {
+        // Arrange
         doNothing().when(exerciseService).deleteExercise(1L);
 
-        mockMvc.perform(delete("/api/v1/exercises/1")
-                        .with(csrf()))
-                .andExpect(status().isNoContent());
+        // Act
+        ResponseEntity<Void> response = restTemplate
+                .withBasicAuth("testuser", "testpass")
+                .exchange("/api/v1/exercises/1", HttpMethod.DELETE, null, Void.class);
+
+        // Assert
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
         verify(exerciseService, times(1)).deleteExercise(1L);
     }
 
     @Test
-    @WithMockUser(username = "user")
-    void getExerciseStatistics_ShouldReturnStats() throws Exception {
+    void getExerciseStatistics_ShouldReturnStats() {
+        // Arrange
+        // Note: Controller expects "userId" parameter
         when(exerciseService.getExerciseStatistics(eq(1L), anyLong())).thenReturn(statisticsDTO);
 
-        mockMvc.perform(get("/api/v1/exercises/1/statistics")
-                        .param("userId", "1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.exerciseId").value(1))
-                .andExpect(jsonPath("$.totalWorkouts").value(5));
+        // Act
+        ResponseEntity<ExerciseStatisticsRequest> response = restTemplate
+                .withBasicAuth("testuser", "testpass")
+                .getForEntity("/api/v1/exercises/1/statistics?userId=100", ExerciseStatisticsRequest.class);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1L, response.getBody().getExerciseId());
+        assertEquals(5, response.getBody().getTotalWorkouts());
+        assertEquals(5000.0, response.getBody().getTotalVolume());
+
+        verify(exerciseService, times(1)).getExerciseStatistics(eq(1L), anyLong());
+    }
+
+    @Test
+    void unauthorizedAccess_ShouldFail() {
+        // Act (No Auth provided)
+        ResponseEntity<String> response = restTemplate
+                .getForEntity("/api/v1/exercises", String.class);
+
+        // Assert
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 }
