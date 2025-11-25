@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VolumeMetrics {
+public class
+VolumeMetrics {
 
     private double totalVolume;
 

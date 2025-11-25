@@ -1,11 +1,13 @@
 package com.danis.ktrack.service.validation;
 
 import com.danis.ktrack.domain.model.entities.ExerciseStatistics;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class ExerciseStatisticsValidationServiceImpl implements ExerciseStatisticsValidationService{
 
     @Override

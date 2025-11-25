@@ -1,11 +1,13 @@
 package com.danis.ktrack.service.validation;
 
 import com.danis.ktrack.domain.model.entities.Exercise;
+import org.springframework.stereotype.Service; // Import this
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExerciseValidationServiceImpl implements ExerciseValidationService{
+@Service // <--- ADD THIS ANNOTATION
+public class ExerciseValidationServiceImpl implements ExerciseValidationService {
     @Override
     public void validate(Exercise exercise) throws ValidationException
     {
@@ -51,5 +53,4 @@ public class ExerciseValidationServiceImpl implements ExerciseValidationService{
             throw new ValidationException(errors);
         }
     }
-
 }
