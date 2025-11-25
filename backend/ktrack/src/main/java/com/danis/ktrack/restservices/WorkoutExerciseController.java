@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,43 +29,53 @@ public class WorkoutExerciseController {
 
     private final WorkoutRepository workoutRepository;
     private final ExerciseRepository exerciseRepository;
-    private final WorkoutMapper workoutMapper;
     private final StaticticsComputationService statisticsComputationService;
 
     /**
      * POST /api/workouts/{workoutId}/exercises
+     * Add exercise to workout
      */
-
     @PostMapping
     public ResponseEntity<WorkoutExerciseDTO> addExerciseToWorkout(
             @PathVariable Long workoutId,
             @Valid @RequestBody WorkoutExerciseCreateDTO createDTO) {
         log.info("Adding exercise {} to workout {}", createDTO.getExerciseId(), workoutId);
 
-        Workout workout = workoutRepository.findById(workoutId)
+        Workout workout = workoutRepository.findByIdWithExercises(workoutId)
                 .orElseThrow(() -> new RuntimeException("Workout not found with id: " + workoutId));
 
         Exercise exercise = exerciseRepository.findById(createDTO.getExerciseId())
                 .orElseThrow(() -> new RuntimeException("Exercise not found with id: " + createDTO.getExerciseId()));
 
+        // Create new WorkoutExercise
         WorkoutExercise workoutExercise = new WorkoutExercise();
         workoutExercise.setWorkout(workout);
         workoutExercise.setExercise(exercise);
         workoutExercise.setOrderIndex(createDTO.getOrderIndex());
         workoutExercise.setNotes(createDTO.getNotes());
-        workoutExercise.setSets(List.of());
+        workoutExercise.setSets(new ArrayList<>()); // Important: use ArrayList
 
-        // Add to workout's exercise list
+        // Initialize workout exercises list if null
         if (workout.getWorkoutExercises() == null) {
-            workout.setWorkoutExercises(List.of(workoutExercise));
-        } else {
-            workout.getWorkoutExercises().add(workoutExercise);
+            workout.setWorkoutExercises(new ArrayList<>());
         }
 
-        Workout savedWorkout = workoutRepository.save(workout);
-        WorkoutExerciseDTO dto = mapToWorkoutExerciseDTO(workoutExercise);
+        // Add to workout's exercise list
+        workout.getWorkoutExercises().add(workoutExercise);
 
-        log.info("Exercise added successfully with ID: {}", workoutExercise.getId());
+        // Save workout (cascade will save workoutExercise)
+        Workout savedWorkout = workoutRepository.save(workout);
+
+        // Find the saved exercise (it will have an ID now)
+        WorkoutExercise savedExercise = savedWorkout.getWorkoutExercises().stream()
+                .filter(we -> we.getExercise().getId().equals(exercise.getId())
+                        && we.getOrderIndex() == createDTO.getOrderIndex())
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Failed to save exercise"));
+
+        WorkoutExerciseDTO dto = mapToWorkoutExerciseDTO(savedExercise);
+
+        log.info("Exercise added successfully with ID: {}", savedExercise.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
@@ -79,7 +90,7 @@ public class WorkoutExerciseController {
             @Valid @RequestBody WorkoutExerciseCreateDTO updateDTO) {
         log.info("Updating exercise {} in workout {}", exerciseId, workoutId);
 
-        Workout workout = workoutRepository.findById(workoutId)
+        Workout workout = workoutRepository.findByIdWithExercises(workoutId)
                 .orElseThrow(() -> new RuntimeException("Workout not found with id: " + workoutId));
 
         WorkoutExercise workoutExercise = workout.getWorkoutExercises().stream()
@@ -107,10 +118,14 @@ public class WorkoutExerciseController {
             @PathVariable Long exerciseId) {
         log.info("Removing exercise {} from workout {}", exerciseId, workoutId);
 
-        Workout workout = workoutRepository.findById(workoutId)
+        Workout workout = workoutRepository.findByIdWithExercises(workoutId)
                 .orElseThrow(() -> new RuntimeException("Workout not found with id: " + workoutId));
 
-        workout.getWorkoutExercises().removeIf(we -> we.getId().equals(exerciseId));
+        boolean removed = workout.getWorkoutExercises().removeIf(we -> we.getId().equals(exerciseId));
+
+        if (!removed) {
+            throw new RuntimeException("Exercise not found in workout with id: " + exerciseId);
+        }
 
         workoutRepository.save(workout);
         log.info("Exercise removed successfully");
@@ -129,7 +144,7 @@ public class WorkoutExerciseController {
             @Valid @RequestBody WorkoutSetCreateDTO createDTO) {
         log.info("Adding set to exercise {} in workout {}", exerciseId, workoutId);
 
-        Workout workout = workoutRepository.findById(workoutId)
+        Workout workout = workoutRepository.findByIdWithExercises(workoutId)
                 .orElseThrow(() -> new RuntimeException("Workout not found with id: " + workoutId));
 
         WorkoutExercise workoutExercise = workout.getWorkoutExercises().stream()
@@ -137,11 +152,12 @@ public class WorkoutExerciseController {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Exercise not found in workout with id: " + exerciseId));
 
+        // Create new set
         WorkoutSet workoutSet = new WorkoutSet();
         workoutSet.setWorkoutExercise(workoutExercise);
         workoutSet.setSetNumber(createDTO.getSetNumber());
         workoutSet.setSetType(createDTO.getSetType());
-
+        workoutSet.setCompleted(false);
 
         // Build set data
         WorkoutSetData setData = new WorkoutSetData();
@@ -153,16 +169,25 @@ public class WorkoutExerciseController {
         setData.setNotes(createDTO.getNotes());
         workoutSet.setSetData(setData);
 
+        // Initialize sets list if null
         if (workoutExercise.getSets() == null) {
-            workoutExercise.setSets(List.of(workoutSet));
-        } else {
-            workoutExercise.getSets().add(workoutSet);
+            workoutExercise.setSets(new ArrayList<>());
         }
 
-        Workout savedWorkout = workoutRepository.save(workout);
-        WorkoutSetDTO dto = mapToWorkoutSetDTO(workoutSet);
+        workoutExercise.getSets().add(workoutSet);
 
-        log.info("Set added successfully with ID: {}", workoutSet.getId());
+        // Save workout (cascade will save the set)
+        Workout savedWorkout = workoutRepository.save(workout);
+
+        // Find the saved set
+        WorkoutSet savedSet = workoutExercise.getSets().stream()
+                .filter(s -> s.getSetNumber() == createDTO.getSetNumber())
+                .reduce((first, second) -> second) // Get last one
+                .orElseThrow(() -> new RuntimeException("Failed to save set"));
+
+        WorkoutSetDTO dto = mapToWorkoutSetDTO(savedSet);
+
+        log.info("Set added successfully with ID: {}", savedSet.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
@@ -178,7 +203,7 @@ public class WorkoutExerciseController {
             @Valid @RequestBody WorkoutSetCreateDTO updateDTO) {
         log.info("Updating set {} for exercise {} in workout {}", setId, exerciseId, workoutId);
 
-        Workout workout = workoutRepository.findById(workoutId)
+        Workout workout = workoutRepository.findByIdWithExercises(workoutId)
                 .orElseThrow(() -> new RuntimeException("Workout not found with id: " + workoutId));
 
         WorkoutExercise workoutExercise = workout.getWorkoutExercises().stream()
@@ -206,7 +231,7 @@ public class WorkoutExerciseController {
         setData.setRestTime(updateDTO.getRestTime());
         setData.setNotes(updateDTO.getNotes());
 
-        Workout savedWorkout = workoutRepository.save(workout);
+        workoutRepository.save(workout);
         WorkoutSetDTO dto = mapToWorkoutSetDTO(workoutSet);
 
         log.info("Set updated successfully");
@@ -224,7 +249,7 @@ public class WorkoutExerciseController {
             @PathVariable Long setId) {
         log.info("Deleting set {} for exercise {} in workout {}", setId, exerciseId, workoutId);
 
-        Workout workout = workoutRepository.findById(workoutId)
+        Workout workout = workoutRepository.findByIdWithExercises(workoutId)
                 .orElseThrow(() -> new RuntimeException("Workout not found with id: " + workoutId));
 
         WorkoutExercise workoutExercise = workout.getWorkoutExercises().stream()
@@ -232,7 +257,11 @@ public class WorkoutExerciseController {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Exercise not found in workout with id: " + exerciseId));
 
-        workoutExercise.getSets().removeIf(s -> s.getId().equals(setId));
+        boolean removed = workoutExercise.getSets().removeIf(s -> s.getId().equals(setId));
+
+        if (!removed) {
+            throw new RuntimeException("Set not found with id: " + setId);
+        }
 
         workoutRepository.save(workout);
         log.info("Set deleted successfully");
@@ -251,7 +280,7 @@ public class WorkoutExerciseController {
             @PathVariable Long setId) {
         log.info("Completing set {} for exercise {} in workout {}", setId, exerciseId, workoutId);
 
-        Workout workout = workoutRepository.findById(workoutId)
+        Workout workout = workoutRepository.findByIdWithExercises(workoutId)
                 .orElseThrow(() -> new RuntimeException("Workout not found with id: " + workoutId));
 
         WorkoutExercise workoutExercise = workout.getWorkoutExercises().stream()
@@ -267,10 +296,15 @@ public class WorkoutExerciseController {
         workoutSet.setCompleted(true);
         workoutSet.setCompletedAt(LocalDateTime.now());
 
-        Workout savedWorkout = workoutRepository.save(workout);
+        workoutRepository.save(workout);
 
         // Update statistics
-        statisticsComputationService.updateStatisticsFromSet(workoutSet);
+        try {
+            statisticsComputationService.updateStatisticsFromSet(workoutSet);
+        } catch (Exception e) {
+            log.error("Failed to update statistics: {}", e.getMessage(), e);
+            // Continue anyway - statistics are secondary
+        }
 
         WorkoutSetDTO dto = mapToWorkoutSetDTO(workoutSet);
         log.info("Set completed successfully");
@@ -295,7 +329,7 @@ public class WorkoutExerciseController {
                 .sets(workoutExercise.getSets() != null ?
                         workoutExercise.getSets().stream()
                                 .map(this::mapToWorkoutSetDTO)
-                                .collect(Collectors.toList()) : List.of())
+                                .collect(Collectors.toList()) : new ArrayList<>())
                 .build();
     }
 
