@@ -4,6 +4,7 @@ import com.danis.ktrack.domain.model.enums.SetType;
 import com.danis.ktrack.domain.model.valueobject.Distance;
 import com.danis.ktrack.domain.model.valueobject.Duration;
 import com.danis.ktrack.domain.model.valueobject.Weight;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
