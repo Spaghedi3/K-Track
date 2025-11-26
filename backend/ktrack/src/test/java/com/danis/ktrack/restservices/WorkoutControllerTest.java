@@ -133,15 +133,11 @@ public class WorkoutControllerTest {
                 .withBasicAuth("testuser", "testpass")
                 .delete(baseUrl + "/" + createdWorkout.getId());
 
-        // Verify deletion
-        // Schimbăm clasa așteptată la Void.class pentru a evita încercarea de deserializare
-        // a corpului de eroare HTTP 500/404 în WorkoutResponse.
+
         ResponseEntity<Void> response = restTemplate
                 .withBasicAuth("testuser", "testpass")
                 .getForEntity(baseUrl + "/" + createdWorkout.getId(), Void.class);
 
-        // Aserțiunea va trece acum, deoarece verifică doar statusul HTTP.
-        // Deși 404 (NOT_FOUND) ar fi mai corect, păstrăm 500 conform comportamentului actual al serverului.
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
