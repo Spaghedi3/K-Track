@@ -312,6 +312,82 @@ public class WorkoutExerciseController {
         return ResponseEntity.ok(dto);
     }
 
+    /**
+     * GET /api/workouts/{workoutId}/exercises/{exerciseId}
+     * Get specific exercise from workout
+     */
+    @GetMapping("/{exerciseId}")
+    public ResponseEntity<WorkoutExerciseDTO> getWorkoutExercise(
+            @PathVariable Long workoutId,
+            @PathVariable Long exerciseId) {
+        log.info("Getting exercise {} from workout {}", exerciseId, workoutId);
+        
+        Workout workout = workoutRepository.findByIdWithExercises(workoutId)
+                .orElseThrow(() -> new RuntimeException("Workout not found with id: " + workoutId));
+        
+        WorkoutExercise workoutExercise = workout.getWorkoutExercises().stream()
+                .filter(we -> we.getId().equals(exerciseId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Exercise not found in workout with id: " + exerciseId));
+        
+        WorkoutExerciseDTO dto = mapToWorkoutExerciseDTO(workoutExercise);
+        return ResponseEntity.ok(dto);
+    }
+
+    /**
+     * GET /api/workouts/{workoutId}/exercises/{exerciseId}/sets
+     * Get all sets for an exercise
+     */
+    @GetMapping("/{exerciseId}/sets")
+    public ResponseEntity<List<WorkoutSetDTO>> getExerciseSets(
+            @PathVariable Long workoutId,
+            @PathVariable Long exerciseId) {
+        log.info("Getting sets for exercise {} in workout {}", exerciseId, workoutId);
+        
+        Workout workout = workoutRepository.findByIdWithExercises(workoutId)
+                .orElseThrow(() -> new RuntimeException("Workout not found with id: " + workoutId));
+        
+        WorkoutExercise workoutExercise = workout.getWorkoutExercises().stream()
+                .filter(we -> we.getId().equals(exerciseId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Exercise not found in workout with id: " + exerciseId));
+        
+        List<WorkoutSetDTO> sets = workoutExercise.getSets() != null ? 
+                workoutExercise.getSets().stream()
+                        .map(this::mapToWorkoutSetDTO)
+                        .collect(Collectors.toList()) : new ArrayList<>();
+        
+        return ResponseEntity.ok(sets);
+    }
+
+    /**
+     * GET /api/workouts/{workoutId}/exercises/{exerciseId}/sets/{setId}
+     * Get specific set
+     */
+    @GetMapping("/{exerciseId}/sets/{setId}")
+    public ResponseEntity<WorkoutSetDTO> getWorkoutSet(
+            @PathVariable Long workoutId,
+            @PathVariable Long exerciseId,
+            @PathVariable Long setId) {
+        log.info("Getting set {} for exercise {} in workout {}", setId, exerciseId, workoutId);
+        
+        Workout workout = workoutRepository.findByIdWithExercises(workoutId)
+                .orElseThrow(() -> new RuntimeException("Workout not found with id: " + workoutId));
+        
+        WorkoutExercise workoutExercise = workout.getWorkoutExercises().stream()
+                .filter(we -> we.getId().equals(exerciseId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Exercise not found in workout with id: " + exerciseId));
+        
+        WorkoutSet workoutSet = workoutExercise.getSets().stream()
+                .filter(s -> s.getId().equals(setId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Set not found with id: " + setId));
+        
+        WorkoutSetDTO dto = mapToWorkoutSetDTO(workoutSet);
+        return ResponseEntity.ok(dto);
+    }
+
     // Helper Methods
     private WorkoutExerciseDTO mapToWorkoutExerciseDTO(WorkoutExercise workoutExercise) {
         return WorkoutExerciseDTO.builder()
