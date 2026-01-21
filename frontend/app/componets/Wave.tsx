@@ -1,16 +1,34 @@
-import React from "react";
-import { Dimensions, View } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { Animated, Dimensions } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
 const { width } = Dimensions.get("window");
 const color = "#57B4BA";
 
 export default function Wave() {
+  const slideAnim = useRef(new Animated.Value(300)).current;
+
+  useEffect(() => {
+    Animated.spring(slideAnim, {
+      toValue: 0,
+      tension: 40,
+      friction: 7,
+      delay: 1000,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   return (
-    <View style={{ position: "absolute", bottom: 0 }}>
+    <Animated.View
+      style={{
+        position: "absolute",
+        bottom: 0,
+        transform: [{ translateY: slideAnim }],
+      }}
+    >
       <Svg
         width={width}
-        height={800}
+        height={900}
         viewBox={"0 0 430 932"}
         preserveAspectRatio="none"
       >
@@ -19,6 +37,6 @@ export default function Wave() {
           fill={color}
         />
       </Svg>
-    </View>
+    </Animated.View>
   );
 }
